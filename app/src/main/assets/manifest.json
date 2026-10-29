@@ -1,0 +1,10 @@
+{
+  "name": "FF Aim Lab - Galaxy A06",
+  "short_name": "FF Aim Lab",
+  "description": "Painel independente de sensibilidade e calibração manual para Galaxy A06 4G.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b0c0f",
+  "theme_color": "#101114",
+  "orientation": "portrait"
+}

@@ -1,0 +1,73 @@
+name: Build FF Aim Lab APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+permissions:
+  contents: read
+
+env:
+  GRADLE_OPTS: -Dorg.gradle.daemon=false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Validate web assets and XML
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from collections import Counter
+          import re
+          import xml.etree.ElementTree as ET
+
+          html_path = Path('app/src/main/assets/index.html')
+          html = html_path.read_text(encoding='utf-8')
+          scripts = re.findall(r'<script>(.*?)</script>', html, flags=re.S)
+          if not scripts:
+              raise SystemExit('No inline JavaScript found in index.html')
+          Path('/tmp/ff-aim-lab-inline.js').write_text('\n'.join(scripts), encoding='utf-8')
+
+          ids = re.findall(r'\bid=["\']([^"\']+)', html)
+          duplicates = [key for key, count in Counter(ids).items() if count > 1]
+          if duplicates:
+              raise SystemExit(f'Duplicate HTML ids: {duplicates}')
+
+          for path in Path('app/src/main').rglob('*.xml'):
+              ET.parse(path)
+          print(f'Validated {len(ids)} unique HTML ids and Android XML resources.')
+          PY
+          node --check /tmp/ff-aim-lab-inline.js
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build debug APK
+        run: gradle --no-daemon assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: FF-Aim-Lab-A06-v2-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
