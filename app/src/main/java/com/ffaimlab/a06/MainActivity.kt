@@ -2,9 +2,18 @@ package com.ffaimlab.a06
 
 import android.app.Activity
 import android.app.ActivityManager
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
+import android.os.BatteryManager
 import android.os.Build
+import android.os.Environment
+import android.os.PowerManager
+import android.os.StatFs
+import android.provider.Settings
 import android.os.Bundle
 import android.webkit.JavascriptInterface
 import android.webkit.ValueCallback
@@ -90,6 +99,71 @@ class MainActivity : Activity() {
         setContentView(webView)
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (::webView.isInitialized) {
+            webView.postDelayed({
+                if (!isFinishing && ::webView.isInitialized) {
+                    webView.evaluateJavascript("window.refreshOverlayStatus && window.refreshOverlayStatus()", null)
+                }
+            }, 350)
+        }
+    }
+
+    private fun readBatteryPercent(): Int {
+        return try {
+            val battery = registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED)) ?: return -1
+            val level = battery.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+            val scale = battery.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+            if (level >= 0 && scale > 0) level * 100 / scale else -1
+        } catch (_: Exception) { -1 }
+    }
+
+    private fun thermalLabel(): String {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return "API indisponível"
+        val power = getSystemService(Context.POWER_SERVICE) as? PowerManager ?: return "Indisponível"
+        return when (power.currentThermalStatus) {
+            PowerManager.THERMAL_STATUS_NONE -> "Normal"
+            PowerManager.THERMAL_STATUS_LIGHT -> "Leve"
+            PowerManager.THERMAL_STATUS_MODERATE -> "Moderado"
+            PowerManager.THERMAL_STATUS_SEVERE -> "Alto"
+            PowerManager.THERMAL_STATUS_CRITICAL -> "Crítico"
+            PowerManager.THERMAL_STATUS_EMERGENCY -> "Emergência"
+            PowerManager.THERMAL_STATUS_SHUTDOWN -> "Desligamento"
+            else -> "Indisponível"
+        }
+    }
+
+    private fun openSetting(key: String): String {
+        val intent = when (key.lowercase(java.util.Locale.ROOT)) {
+            "battery" -> Intent(Settings.ACTION_BATTERY_SAVER_SETTINGS)
+            "display" -> Intent(Settings.ACTION_DISPLAY_SETTINGS)
+            "notifications" -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+            } else {
+                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName"))
+            }
+            "freefire" -> {
+                val target = when {
+                    isLaunchable("com.dts.freefireth") -> "com.dts.freefireth"
+                    isLaunchable("com.dts.freefiremax") -> "com.dts.freefiremax"
+                    else -> null
+                } ?: return JSONObject().put("ok", false).put("message", "Nenhuma edição do Free Fire foi encontrada.").toString()
+                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$target"))
+            }
+            else -> return JSONObject().put("ok", false).put("message", "Atalho não reconhecido.").toString()
+        }
+        return try {
+            runOnUiThread {
+                try { startActivity(intent) }
+                catch (_: Exception) { Toast.makeText(this, "Configuração não disponível neste aparelho.", Toast.LENGTH_SHORT).show() }
+            }
+            JSONObject().put("ok", true).put("message", "Abrindo configurações do Android.").toString()
+        } catch (_: Exception) {
+            JSONObject().put("ok", false).put("message", "Não foi possível abrir esta configuração.").toString()
+        }
+    }
+
     private fun isLaunchable(packageName: String): Boolean {
         return try {
             packageManager.getLaunchIntentForPackage(packageName) != null
@@ -109,10 +183,81 @@ class MainActivity : Activity() {
                 .put("manufacturer", Build.MANUFACTURER)
                 .put("androidRelease", Build.VERSION.RELEASE ?: "Android")
                 .put("sdkInt", Build.VERSION.SDK_INT)
-                .put("totalRam", totalRam)
+                 .put("totalRam", totalRam)
+                .put("totalRamBytes", memoryInfo.totalMem)
                 .put("freeFireNormal", isLaunchable(FREE_FIRE_PACKAGE))
                 .put("freeFireMax", isLaunchable(FREE_FIRE_MAX_PACKAGE))
                 .toString()
+        }
+
+        @JavascriptInterface
+        fun getSystemStatus(): String {
+            val memoryInfo = ActivityManager.MemoryInfo()
+            (getSystemService(ACTIVITY_SERVICE) as ActivityManager).getMemoryInfo(memoryInfo)
+            val storageFree = try { StatFs(Environment.getDataDirectory().absolutePath).availableBytes } catch (_: Exception) { -1L }
+            return JSONObject()
+                .put("totalRamBytes", memoryInfo.totalMem)
+                .put("availableRam", memoryInfo.availMem)
+                .put("lowMemory", memoryInfo.lowMemory)
+                .put("batteryLevel", readBatteryPercent())
+                .put("thermalLabel", thermalLabel())
+                .put("storageFreeBytes", storageFree)
+                .toString()
+        }
+
+        @JavascriptInterface
+        fun copyText(text: String): Boolean {
+            if (text.length > 20_000) return false
+            return try {
+                val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                clipboard.setPrimaryClip(ClipData.newPlainText("Yoru Aim Lab", text))
+                runOnUiThread { Toast.makeText(this@MainActivity, "Perfil copiado.", Toast.LENGTH_SHORT).show() }
+                true
+            } catch (_: Exception) { false }
+        }
+
+        @JavascriptInterface
+        fun openSystemSetting(key: String): String = openSetting(key)
+
+        @JavascriptInterface
+        fun getOverlayStatus(): String {
+            val allowed = Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(this@MainActivity)
+            val running = getSharedPreferences(FloatingAimService.PREFS, MODE_PRIVATE).getBoolean("running", false)
+            return JSONObject().put("permission", allowed).put("running", running).toString()
+        }
+
+        @JavascriptInterface
+        fun startFloatingPanel(profileJson: String): String {
+            if (profileJson.isBlank() || profileJson.length > 200_000) {
+                return JSONObject().put("ok", false).put("message", "Os dados do perfil são inválidos.").toString()
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this@MainActivity)) {
+                runOnUiThread {
+                    try { startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))) }
+                    catch (_: Exception) { Toast.makeText(this@MainActivity, "Abra as permissões de sobreposição nas configurações.", Toast.LENGTH_LONG).show() }
+                }
+                return JSONObject().put("ok", false).put("needsPermission", true).put("message", "Conceda Exibir sobre outros apps e toque em Ativar novamente.").toString()
+            }
+            runOnUiThread {
+                try {
+                    val serviceIntent = Intent(this@MainActivity, FloatingAimService::class.java)
+                        .setAction(FloatingAimService.ACTION_START)
+                        .putExtra(FloatingAimService.EXTRA_PROFILE_JSON, profileJson)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(serviceIntent) else startService(serviceIntent)
+                } catch (_: Exception) {
+                    Toast.makeText(this@MainActivity, "Não foi possível iniciar o painel flutuante.", Toast.LENGTH_LONG).show()
+                }
+            }
+            return JSONObject().put("ok", true).put("message", "Solicitação de painel flutuante enviada.").toString()
+        }
+
+        @JavascriptInterface
+        fun stopFloatingPanel(): Boolean {
+            runOnUiThread {
+                try { startService(Intent(this@MainActivity, FloatingAimService::class.java).setAction(FloatingAimService.ACTION_STOP)) }
+                catch (_: Exception) { stopService(Intent(this@MainActivity, FloatingAimService::class.java)) }
+            }
+            return true
         }
 
         @JavascriptInterface

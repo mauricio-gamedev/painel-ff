@@ -1,39 +1,37 @@
-# FF Aim Lab — Galaxy A06 4G
+# Yoru Aim Lab — Galaxy A06 4G
 
-Painel Android independente, em português, para organizar perfis de sensibilidade, treinar movimentos de arrasto e preparar o Galaxy A06 antes de jogar.
+Painel Android independente em português, com tema anime dark, para perfis de sensibilidade, diagnóstico orientativo de arrasto e preparação do Galaxy A06 antes de jogar.
 
-## Recursos
+## Recursos da versão 2.1
 
-- Perfis Equilibrado, Puxada de capa, Precisão e Personalizado.
-- Ajustes locais de Geral, Ponto vermelho, 2×, 4×, AWM, Olhadinha e botão de tiro.
-- Treino local de alvo e diagnóstico orientativo.
-- Checklist de desempenho com persistência.
-- Importação/exportação JSON de perfis por seletor de arquivos Android.
-- Detecção e abertura das edições reconhecidas do Free Fire e Free Fire MAX.
-- Resumo do dispositivo usando informações expostas pelo Android.
-- Projeto Kotlin + Android WebView, sem login ou permissões de root.
-- GitHub Actions para validar assets e compilar um APK de depuração.
+- Tema Yoru anime dark com neon rosa/violeta.
+- Perfis locais Equilibrado, Capa suave, Precisão e Personalizado.
+- Controles de Geral, Ponto vermelho, 2×, 4×, AWM, Olhadinha e botão de tiro.
+- Assistente conservador para “mira pesada”, “passa do alvo” e “tremedeira”.
+- Teste de traço/toque dentro do aplicativo.
+- Painel flutuante Android arrastável, com perfis rápidos, valores, copiar e recolher/parar.
+- Diagnóstico de RAM disponível, bateria, estado térmico e armazenamento livre quando o Android oferece esses dados.
+- Atalhos para configurações oficiais do Android (bateria, tela, notificações e detalhes do app do jogo).
+- Importação/exportação JSON e persistência local.
+- GitHub Actions valida JavaScript/XML e compila APK de depuração.
 
-## Limites de integração
+## Ativar painel flutuante
 
-O projeto não presume uma API pública do Free Fire para escrever opções internas de sensibilidade. A camada Android pode detectar a presença das edições conhecidas e solicitar que o Android as abra; não lê nem modifica a memória do jogo, não injeta bibliotecas, não edita arquivos do jogo e não executa macros.
+Toque em Ativar / atualizar painel flutuante. O Android poderá abrir Exibir sobre outros apps; conceda a permissão para o Yoru Aim Lab e volte ao aplicativo, depois toque em Ativar novamente. O serviço mantém uma notificação enquanto o painel estiver ativo. Arraste a bolha para reposicionar, toque para abrir, recolha ou pare o serviço dentro do painel.
+
+## Limites técnicos
+
+O mini painel mostra e copia perfis, mas não escreve parâmetros internos do Free Fire, não injeta bibliotecas, não filtra eventos de toque e não envia movimentos automáticos. A análise de traço mede somente gestos na área de treino do próprio Yoru Aim Lab. Para testar a calibração no jogo, aplique os valores manualmente e mude uma variável por vez.
+
+O diagnóstico do sistema mostra sinais disponíveis no Android; não promete ganho artificial de FPS. Os atalhos abrem configurações oficiais e não encerram serviços nem limpam RAM agressivamente.
 
 ## Compilar sem Termux
 
-1. Abra a aba **Actions** deste repositório.
-2. Execute **Build FF Aim Lab APK**, ou envie um commit para `main`.
-3. Quando o workflow terminar, baixe o artefato `FF-Aim-Lab-A06-v2-debug-apk`.
-4. Extraia o ZIP do artefato e instale `app-debug.apk` no Android para teste.
-
-O APK de depuração é destinado a testes. Ainda precisa de validação em aparelho real antes de ser considerado estável.
+1. Abra a aba Actions deste repositório.
+2. Execute Build FF Aim Lab APK ou envie um commit para a branch main.
+3. Baixe o artefato FF-Aim-Lab-A06-v2-debug-apk após o workflow concluir com sucesso.
+4. Extraia o ZIP e instale app-debug.apk no Android para testar.
 
 ## Privacidade
 
-Os perfis são guardados localmente ou em arquivos escolhidos pelo usuário. O aplicativo não solicita root, acesso à internet, serviço de acessibilidade ou sobreposição de tela. Projeto independente, sem afiliação com a Garena.
-
-## Estrutura
-
-- `app/`: aplicativo Android nativo e assets locais.
-- `index.html`, `manifest.json`, `sw.js`: versão web/PWA.
-- `.github/workflows/build-apk.yml`: validação e build de APK.
-- `CHANGELOG.md`: histórico de alterações.
+Perfis ficam locais ou em arquivos escolhidos pelo usuário. O app não solicita root nem permissão de internet. A permissão de sobreposição só é usada após ação explícita do usuário. Projeto independente, sem afiliação com a Garena.

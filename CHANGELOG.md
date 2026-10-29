@@ -1,12 +1,13 @@
 # Changelog
 
-## 2.0 — Android integration baseline
+## 2.1 — Yoru Anime Dark + Floating Panel
 
-- Added native detection for the known Free Fire and Free Fire MAX package IDs.
-- Added launch buttons that use the Android package launch intent; this does not access the game process.
-- Added runtime device model, Android version, and approximate total RAM reporting.
-- Added Android document picker support for profile JSON import and export.
-- Added persistent sensitivity profiles and calibration/target practice.
-- Added local performance preparation checklist.
-- Added CI validation for inline JavaScript syntax, duplicate HTML IDs, and Android XML resources before Gradle build.
-- Direct internal game modification remains out of scope because no supported game settings API is exposed to this app.
+- Reworked the interface with an anime-dark palette, sakura neon accents and mobile-friendly layout.
+- Added Android overlay permission flow and a draggable floating quick panel that can be minimized or stopped.
+- Added floating profile shortcuts and local clipboard export; values are presented for manual application.
+- Added a conservative calibration assistant for heavy-feeling drag and overshooting, with optional local application of suggested profile values.
+- Added a touch-path test canvas that measures gestures inside the app only.
+- Added Android runtime status for available RAM, battery, thermal state and free internal storage when supported.
+- Added shortcuts to official Android battery, display, notifications and installed game app settings.
+- Updated app version and web-app cache identifier to 2.1.
+- The overlay does not intercept game input, synthesize touches, modify game files, read game memory or claim to stabilize aim inside gameplay.

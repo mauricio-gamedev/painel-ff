@@ -1,10 +1,10 @@
 {
-  "name": "FF Aim Lab - Galaxy A06",
-  "short_name": "FF Aim Lab",
-  "description": "Painel independente de sensibilidade e calibração manual para Galaxy A06 4G.",
+  "name": "Yoru Aim Lab - Galaxy A06",
+  "short_name": "Yoru Aim",
+  "description": "Painel anime dark de calibração manual, treino de toque e otimização para Galaxy A06 4G.",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0b0c0f",
-  "theme_color": "#101114",
+  "background_color": "#0b0812",
+  "theme_color": "#0b0812",
   "orientation": "portrait"
 }
