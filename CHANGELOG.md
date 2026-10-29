@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2 — External manual assistant
+
+- Rebuilt the floating overlay as a scrollable external assistant with interactive sliders for all sensitivity fields.
+- Added persistence for user-adjusted values, synchronised preset controls, profile copy, and launch shortcuts for Free Fire and Free Fire MAX.
+- Kept the panel independent of protected game files and documented manual application of values.
+
 ## 2.1.1 — Wallpaper integration
 
 - Added an actual remote anime character wallpaper as a full-screen app backdrop, with dark overlays to keep text readable.

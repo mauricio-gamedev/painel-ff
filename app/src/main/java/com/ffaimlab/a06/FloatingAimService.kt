@@ -23,6 +23,8 @@ import android.view.View
 import android.view.ViewConfiguration
 import android.view.WindowManager
 import android.widget.LinearLayout
+import android.widget.ScrollView
+import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import org.json.JSONObject
@@ -52,6 +54,8 @@ class FloatingAimService : Service() {
     private var panelValues: TextView? = null
     private var active = "balanced"
     private var values = defaultValues("balanced")
+    private val sliderViews = mutableMapOf<String, SeekBar>()
+    private val sliderValueViews = mutableMapOf<String, TextView>()
 
     override fun onCreate() {
         super.onCreate()
@@ -222,10 +226,12 @@ class FloatingAimService : Service() {
         bubble?.let { try { wm.removeView(it) } catch (_: Exception) {} }
         bubble = null; bubbleParams = null
         loadValues()
-        val width = min(dp(326), resources.displayMetrics.widthPixels - dp(16)).coerceAtLeast(dp(250))
+        sliderViews.clear()
+        sliderValueViews.clear()
+        val width = min(dp(340), resources.displayMetrics.widthPixels - dp(16)).coerceAtLeast(dp(250))
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(13), dp(12), dp(13), dp(13))
+            setPadding(dp(12), dp(11), dp(12), dp(11))
             background = GradientDrawable(GradientDrawable.Orientation.TL_BR,
                 intArrayOf(Color.rgb(28, 17, 40), Color.rgb(13, 11, 23))).apply {
                 cornerRadius = dp(20).toFloat()
@@ -236,31 +242,125 @@ class FloatingAimService : Service() {
         panel = root
         val header = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         val titles = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        titles.addView(label("夜  YORU QUICK PANEL", 12f, Color.rgb(255, 79, 145), true))
-        titles.addView(label("CALIBRATION · A06", 9f, Color.rgb(173, 161, 189), true))
+        titles.addView(label("夜  YORU EXTERNAL ASSISTANT", 12f, Color.rgb(255, 79, 145), true))
+        titles.addView(label("PERFIS + AJUSTES MANUAIS", 9f, Color.rgb(173, 161, 189), true))
         header.addView(titles, LinearLayout.LayoutParams(0, dp(42), 1f))
         header.addView(button("⌄", false) { minimizePanel() }, LinearLayout.LayoutParams(dp(39), dp(36)))
         root.addView(header)
-        root.addView(label("Perfis rápidos", 11f, Color.rgb(173, 161, 189), true).apply { setPadding(0, dp(6), 0, dp(5)) })
+
+        val scroll = ScrollView(this).apply { isFillViewport = false; overScrollMode = View.OVER_SCROLL_IF_CONTENT_SCROLLS }
+        val content = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        content.addView(label("Perfis rápidos", 11f, Color.rgb(173, 161, 189), true).apply {
+            setPadding(0, dp(6), 0, dp(5))
+        })
         val row1 = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
-        row1.addView(button("🌙 Equilibrado", false) { choose("balanced") }, LinearLayout.LayoutParams(0, dp(39), 1f).apply { rightMargin = dp(4) })
-        row1.addView(button("⚡ Capa", false) { choose("capa") }, LinearLayout.LayoutParams(0, dp(39), 1f).apply { leftMargin = dp(4) })
-        root.addView(row1)
-        val row2 = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; setPadding(0, dp(7), 0, 0) }
-        row2.addView(button("✧ Precisão", false) { choose("precision") }, LinearLayout.LayoutParams(0, dp(39), 1f).apply { rightMargin = dp(4) })
-        row2.addView(button("▣ Copiar ajustes", true) { copyProfile() }, LinearLayout.LayoutParams(0, dp(39), 1f).apply { leftMargin = dp(4) })
-        root.addView(row2)
-        panelStatus = label("Perfil: " + profileName(), 11f, Color.rgb(255, 181, 217), true).apply { setPadding(0, dp(11), 0, dp(4)) }
-        panelValues = label(summary(), 12f, Color.rgb(232, 223, 245), true).apply { setPadding(0, 0, 0, dp(6)) }
-        root.addView(panelStatus); root.addView(panelValues)
-        root.addView(label("Mostra/copia valores. Não altera a mira do jogo.", 9f, Color.rgb(173, 161, 189)))
-        val footer = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; setPadding(0, dp(8), 0, 0) }
-        footer.addView(button("Recolher", false) { minimizePanel() }, LinearLayout.LayoutParams(0, dp(36), 1f).apply { rightMargin = dp(4) })
-        footer.addView(button("Parar painel", false) { stopPanel() }, LinearLayout.LayoutParams(0, dp(36), 1f).apply { leftMargin = dp(4) })
+        row1.addView(button("🌙 Equilibrado", false) { choose("balanced") },
+            LinearLayout.LayoutParams(0, dp(38), 1f).apply { rightMargin = dp(4) })
+        row1.addView(button("⚡ Capa", false) { choose("capa") },
+            LinearLayout.LayoutParams(0, dp(38), 1f).apply { leftMargin = dp(4) })
+        content.addView(row1)
+        val row2 = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; setPadding(0, dp(6), 0, 0) }
+        row2.addView(button("✧ Precisão", false) { choose("precision") },
+            LinearLayout.LayoutParams(0, dp(38), 1f).apply { rightMargin = dp(4) })
+        row2.addView(button("▣ Copiar perfil", true) { copyProfile() },
+            LinearLayout.LayoutParams(0, dp(38), 1f).apply { leftMargin = dp(4) })
+        content.addView(row2)
+
+        val gameRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; setPadding(0, dp(6), 0, 0) }
+        gameRow.addView(button("Abrir Free Fire", false) { launchGame("com.dts.freefireth") },
+            LinearLayout.LayoutParams(0, dp(36), 1f).apply { rightMargin = dp(4) })
+        gameRow.addView(button("Abrir FF MAX", false) { launchGame("com.dts.freefiremax") },
+            LinearLayout.LayoutParams(0, dp(36), 1f).apply { leftMargin = dp(4) })
+        content.addView(gameRow)
+
+        panelStatus = label("Perfil: " + profileName(), 11f, Color.rgb(255, 181, 217), true)
+            .apply { setPadding(0, dp(10), 0, dp(2)) }
+        panelValues = label(summary(), 11f, Color.rgb(232, 223, 245), true)
+            .apply { setPadding(0, 0, 0, dp(8)) }
+        content.addView(panelStatus)
+        content.addView(panelValues)
+        content.addView(label("AJUSTE MANUAL • mova os controles e salve o perfil", 9f, Color.rgb(173, 161, 189), true)
+            .apply { setPadding(0, dp(3), 0, dp(5)) })
+
+        val names = linkedMapOf(
+            "general" to "Geral",
+            "red" to "Ponto vermelho",
+            "x2" to "Mira 2×",
+            "x4" to "Mira 4×",
+            "awm" to "AWM / Sniper",
+            "look" to "Olhadinha",
+            "fire" to "Tamanho do botão de tiro (%)"
+        )
+        names.forEach { (key, title) ->
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(0, dp(2), 0, dp(2))
+            }
+            val labelRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+            labelRow.addView(label(title, 10f, Color.rgb(232, 223, 245), true),
+                LinearLayout.LayoutParams(0, dp(22), 1f))
+            val valueText = label((values[key] ?: 0).toString(), 10f, Color.rgb(255, 79, 145), true).apply {
+                gravity = Gravity.END or Gravity.CENTER_VERTICAL
+            }
+            labelRow.addView(valueText, LinearLayout.LayoutParams(dp(40), dp(22)))
+            sliderValueViews[key] = valueText
+            row.addView(labelRow)
+            val seek = SeekBar(this).apply {
+                max = if (key == "fire") 100 else 200
+                progress = (values[key] ?: 0).coerceIn(0, max)
+                contentDescription = title
+            }
+            sliderViews[key] = seek
+            seek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    if (!fromUser) return
+                    values[key] = progress
+                    active = "custom"
+                    valueText.text = progress.toString()
+                    refreshPanel()
+                    saveValues()
+                }
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+            })
+            row.addView(seek, LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, dp(30)))
+            content.addView(row)
+        }
+        content.addView(label("Valores salvos neste painel; aplique-os manualmente nas configurações do jogo.", 9f, Color.rgb(173, 161, 189))
+            .apply { setPadding(0, dp(5), 0, dp(5)) })
+        scroll.addView(content)
+        root.addView(scroll, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
+
+        val footer = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; setPadding(0, dp(6), 0, 0) }
+        footer.addView(button("Salvar", true) { saveValues(); Toast.makeText(this, "Perfil salvo neste aparelho.", Toast.LENGTH_SHORT).show() },
+            LinearLayout.LayoutParams(0, dp(35), 1f).apply { rightMargin = dp(3) })
+        footer.addView(button("Recolher", false) { minimizePanel() },
+            LinearLayout.LayoutParams(0, dp(35), 1f).apply { leftMargin = dp(3); rightMargin = dp(3) })
+        footer.addView(button("Parar", false) { stopPanel() },
+            LinearLayout.LayoutParams(0, dp(35), 1f).apply { leftMargin = dp(3) })
         root.addView(footer)
-        val params = params(width, WindowManager.LayoutParams.WRAP_CONTENT, dp(8), dp(135))
-        safeAdd(root, params)
+
+        val height = min(dp(650), resources.displayMetrics.heightPixels - dp(70)).coerceAtLeast(dp(420))
+        val lp = params(width, height, dp(8), dp(72))
+        safeAdd(root, lp)
         saveValues()
+    }
+
+    private fun launchGame(packageName: String) {
+        val intent = try { packageManager.getLaunchIntentForPackage(packageName) } catch (_: Exception) { null }
+        if (intent == null) {
+            Toast.makeText(this, if (packageName == "com.dts.freefiremax") "Free Fire MAX não foi encontrado." else "Free Fire não foi encontrado.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        try {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+            Toast.makeText(this, "Abrindo o jogo. Aplique os valores manualmente.", Toast.LENGTH_SHORT).show()
+        } catch (_: Exception) {
+            Toast.makeText(this, "Não foi possível abrir o jogo.", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun button(text: String, primary: Boolean, action: () -> Unit): TextView =
@@ -275,6 +375,10 @@ class FloatingAimService : Service() {
     private fun choose(name: String) {
         active = name
         values = defaultValues(name)
+        values.forEach { (key, value) ->
+            sliderValueViews[key]?.text = value.toString()
+            sliderViews[key]?.progress = value
+        }
         saveValues()
         refreshPanel()
     }
@@ -287,7 +391,7 @@ class FloatingAimService : Service() {
     }
 
     private fun summary(): String = "Geral " + values["general"] + "  ·  Vermelho " + values["red"] +
-        "\n2× " + values["x2"] + "  ·  4× " + values["x4"] + "  ·  Tiro " + values["fire"] + "%"
+        "\n2× " + values["x2"] + "  ·  4× " + values["x4"] + "  ·  AWM " + values["awm"] + "  ·  Tiro " + values["fire"] + "%"
 
     private fun refreshPanel() {
         panelStatus?.text = "Perfil: " + profileName()

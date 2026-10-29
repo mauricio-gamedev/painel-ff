@@ -2,14 +2,14 @@
 
 Painel Android independente em português, com tema anime dark, para perfis de sensibilidade, diagnóstico orientativo de arrasto e preparação do Galaxy A06 antes de jogar.
 
-## Recursos da versão 2.1
+## Recursos da versão 2.2
 
 - Tema Yoru anime dark com neon rosa/violeta.
 - Perfis locais Equilibrado, Capa suave, Precisão e Personalizado.
 - Controles de Geral, Ponto vermelho, 2×, 4×, AWM, Olhadinha e botão de tiro.
 - Assistente conservador para “mira pesada”, “passa do alvo” e “tremedeira”.
 - Teste de traço/toque dentro do aplicativo.
-- Painel flutuante Android arrastável, com perfis rápidos, valores, copiar e recolher/parar.
+- Assistente externo Android arrastável com sliders reais para Geral, Ponto vermelho, 2×, 4×, AWM, Olhadinha e tamanho do botão de tiro; salva perfis localmente e oferece atalho para abrir Free Fire/FF MAX.
 - Diagnóstico de RAM disponível, bateria, estado térmico e armazenamento livre quando o Android oferece esses dados.
 - Atalhos para configurações oficiais do Android (bateria, tela, notificações e detalhes do app do jogo).
 - Importação/exportação JSON e persistência local.
@@ -21,7 +21,7 @@ Toque em Ativar / atualizar painel flutuante. O Android poderá abrir Exibir sob
 
 ## Limites técnicos
 
-O mini painel mostra e copia perfis, mas não escreve parâmetros internos do Free Fire, não injeta bibliotecas, não filtra eventos de toque e não envia movimentos automáticos. A análise de traço mede somente gestos na área de treino do próprio Yoru Aim Lab. Para testar a calibração no jogo, aplique os valores manualmente e mude uma variável por vez.
+O assistente externo agora permite alterar e salvar os valores do próprio perfil com controles deslizantes, alternar predefinições, copiar os valores e abrir o jogo por cima do Android. Ele não escreve parâmetros internos do Free Fire, não injeta bibliotecas, não filtra eventos de toque e não envia movimentos automáticos; aplique os valores manualmente no jogo. A análise de traço mede somente gestos na área de treino do próprio Yoru Aim Lab. Para testar a calibração no jogo, aplique os valores manualmente e mude uma variável por vez.
 
 O diagnóstico do sistema mostra sinais disponíveis no Android; não promete ganho artificial de FPS. Os atalhos abrem configurações oficiais e não encerram serviços nem limpam RAM agressivamente.
 
