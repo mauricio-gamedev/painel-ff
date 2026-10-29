@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.1 — Wallpaper integration
+
+- Added an actual remote anime character wallpaper as a full-screen app backdrop, with dark overlays to keep text readable.
+- Added the wallpaper source credit to the app and README.
+- Added Android INTERNET permission only to load the remote background; profile data stays local.
+
+
 ## 2.1 — Yoru Anime Dark + Floating Panel
 
 - Reworked the interface with an anime-dark palette, sakura neon accents and mobile-friendly layout.

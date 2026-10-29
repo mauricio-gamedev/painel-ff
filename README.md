@@ -32,6 +32,12 @@ O diagnóstico do sistema mostra sinais disponíveis no Android; não promete ga
 3. Baixe o artefato FF-Aim-Lab-A06-v2-debug-apk após o workflow concluir com sucesso.
 4. Extraia o ZIP e instale app-debug.apk no Android para testar.
 
+## Arte de fundo e créditos
+
+- Wallpaper de fundo: **Neon Cyberpunk Anime Girl**, publicado por Backiee: https://backiee.com/wallpaper/neon-cyberpunk-anime-girl/363313
+- A imagem é carregada pela URL HTTPS do provedor e exige permissão de internet; o app não envia perfis nem dados do dispositivo para esse site. Se a URL deixar de funcionar ou o dispositivo estiver offline, o fundo remoto não aparece e a interface escura continua utilizável.
+- Consulte os termos do autor/provedor antes de redistribuir ou usar comercialmente essa imagem.
+
 ## Privacidade
 
-Perfis ficam locais ou em arquivos escolhidos pelo usuário. O app não solicita root nem permissão de internet. A permissão de sobreposição só é usada após ação explícita do usuário. Projeto independente, sem afiliação com a Garena.
+Perfis ficam locais ou em arquivos escolhidos pelo usuário. A permissão de internet existe apenas para carregar o wallpaper remoto; a permissão de sobreposição só é usada após ação explícita do usuário. O app não envia os perfis para servidores. Projeto independente, sem afiliação com a Garena.
