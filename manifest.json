@@ -1,7 +1,7 @@
 {
   "name": "Yoru Aim Lab - Galaxy A06",
   "short_name": "Yoru Aim",
-  "description": "Painel anime dark de calibração manual, treino de toque e otimização para Galaxy A06 4G.",
+  "description": "Painel anime dark com microcorreções guiadas e calibração manual para Galaxy A06 4G.",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0b0812",
