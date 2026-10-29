@@ -1,3 +1,10 @@
+## 2.3 — Microcorreção guiada A06
+
+- Added selectable sensitivity target so only one parameter changes per calibration round.
+- Made the suggestion engine conservative: conflicting symptoms produce no automatic profile change; overshoot, heavy drag and shake propose small local adjustments.
+- Versioned service-worker cache to v23 and synchronized website and Android WebView assets.
+- Clarified that all suggested values must be applied manually inside the official game client.
+
 # Changelog
 
 ## 2.2 — External manual assistant
