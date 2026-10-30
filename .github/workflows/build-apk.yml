@@ -2,6 +2,8 @@ name: Build FF Aim Lab APK
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [ main, master ]
   push:
     branches: [ main, master ]
 
@@ -28,6 +30,9 @@ jobs:
 
           html_path = Path('app/src/main/assets/index.html')
           html = html_path.read_text(encoding='utf-8')
+          root_html = Path('index.html').read_text(encoding='utf-8')
+          if root_html != html:
+              raise SystemExit('Root index.html must match app/src/main/assets/index.html.')
           scripts = re.findall(r'<script>(.*?)</script>', html, flags=re.S)
           if not scripts:
               raise SystemExit('No inline JavaScript found in index.html')
