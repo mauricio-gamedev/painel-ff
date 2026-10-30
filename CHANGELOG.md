@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.3 — Prévia de suavização de trajetória
+
+- Adicionada a área de teste de toque que faltava no HTML, conectada aos eventos de ponteiro existentes.
+- Implementada média móvel ajustável nos eixos X e Y, comparação visual entre trajeto bruto e suavizado e métricas locais de percurso/amostras.
+- Limitado o buffer do traço para manter o consumo de memória controlado em aparelhos modestos; o filtro permanece apenas visual e não interfere nos eventos do jogo.
+
+
 ## 2.2 — External manual assistant
 
 - Rebuilt the floating overlay as a scrollable external assistant with interactive sliders for all sensitivity fields.
