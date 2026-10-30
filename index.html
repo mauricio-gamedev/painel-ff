@@ -27,7 +27,7 @@ input[type=range],.check input{accent-color:var(--accent)}.value{color:#81e6ff}
 .yoru-slider{padding:9px 0;border-bottom:1px solid #2a2137}.yoru-slider:last-child{border:0}.yoru-slider .slider-head{display:flex;justify-content:space-between;font-size:12px;gap:8px}.yoru-meter{height:7px;background:#292136;border-radius:99px;overflow:hidden;margin:8px 0}.yoru-meter span{display:block;height:100%;background:linear-gradient(90deg,#a68cff,#ff4f91);width:0}
 .yoru-result{border:1px solid #5a3557;background:#211528;border-radius:14px;padding:12px;margin-top:10px}.yoru-result strong{display:block;color:#ff4f91;font-size:12px;margin-bottom:5px}.yoru-result p{font-size:12px;margin:0;color:#e3d4e9;line-height:1.5}
 .yoru-floating{padding:12px;border:1px solid #4d3c69;border-radius:13px;background:linear-gradient(115deg,#22162d,#151426);display:flex;align-items:center;gap:10px}.yoru-float-icon{width:43px;height:43px;display:grid;place-items:center;border-radius:13px;background:#ff4f9119;border:1px solid #ff4f9155;color:#ff4f91;font-size:22px;flex-shrink:0}
-#touch-canvas{display:block;width:100%;height:160px;touch-action:none;border:1px solid #45364f;border-radius:13px;background:#0c0a13;margin-top:10px}
+#touch-canvas{display:block;width:100%;height:180px;touch-action:none;overscroll-behavior:contain;border:1px solid #45364f;border-radius:13px;background:#0c0a13;margin-top:10px;touch-action:none}.yoru-legend{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:10px;color:var(--muted);font-size:11px}.yoru-legend span{display:inline-flex;align-items:center;gap:6px}.yoru-legend .raw::before,.yoru-legend .smooth::before{content:"";display:inline-block;width:18px;border-top:2px dashed #a68cff}.yoru-legend .smooth::before{border-top:3px solid #81e6ff}.trace-help{margin-top:8px;font-size:11px;line-height:1.5;color:#b9aecb}
 .yoru-footnote{font-size:10px;color:#857a94;text-align:center;margin-top:15px}
 @media(max-width:375px){.tab{font-size:10px;padding:9px 2px}.btn{padding:10px 7px}.yoru-grid{grid-template-columns:1fr}}
 
@@ -45,7 +45,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 @media(min-width:620px){body::before{background-position:center,center,right center}}
 </style></head>
 <body><main class="app">
-<header class="header"><div class="brand"><div class="logo">夜</div><div><div class="eyebrow">YORU PROJECT · A06</div><div class="title">Yoru Aim Lab</div><div class="muted">Mira • calibração • sistema</div></div></div><span class="pill">ANIME DARK / v2.1</span></header>
+<header class="header"><div class="brand"><div class="logo">夜</div><div><div class="eyebrow">YORU PROJECT · A06</div><div class="title">Yoru Aim Lab</div><div class="muted">Mira • calibração • sistema</div></div></div><span class="pill">ANIME DARK / v2.3</span></header>
 <section class="hero"><div class="eyebrow">✦ GALAXY A06 4G · PERSONAL EDITION</div><h2>Encontre seu<br>ponto de controle.</h2><p>Calibração cuidadosa, treino de toque e preparação do aparelho numa interface anime dark.</p><span class="pill" style="display:inline-block;margin-top:12px">🌙 YORU MODE · NEON SAKURA</span></section>
 <nav class="tabs" aria-label="Seções"><button class="tab active" data-page="aim">🎯 Mira</button><button class="tab" data-page="train">◎ Treino</button><button class="tab" data-page="stabilizer">✦ Estável</button><button class="tab" data-page="system">⚡ Otimizar</button><button class="tab" data-page="floating">▣ Flutuante</button><button class="tab" data-page="connect">📱 A06</button></nav>
 <section class="page active" id="aim"><div class="card"><div class="section-head"><div><h3>Perfis rápidos</h3><div class="muted">Ponto de partida; ajuste após testar no treino.</div></div></div><div class="profiles"><button class="profile active" data-profile="balanced">Equilibrado<small>Controle geral</small></button><button class="profile" data-profile="capa">Puxada de capa<small>Arrasto mais rápido</small></button><button class="profile" data-profile="precision">Precisão<small>Movimentos curtos</small></button><button class="profile" data-profile="custom">Personalizado<small>Seu ajuste salvo</small></button></div></div>
@@ -56,7 +56,15 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 <div class="yoru-slider"><div class="slider-head"><label for="yoru-over">Passa da cabeça / passa do alvo</label><output class="value" id="yoru-over-out">8/10</output></div><input id="yoru-over" type="range" min="0" max="10" value="8"><div class="yoru-meter"><span id="yoru-over-meter" style="width:80%"></span></div></div>
 <div class="yoru-slider"><div class="slider-head"><label for="yoru-shake">Tremedeira / microcorreções</label><output class="value" id="yoru-shake-out">5/10</output></div><input id="yoru-shake" type="range" min="0" max="10" value="5"><div class="yoru-meter"><span id="yoru-shake-meter" style="width:50%"></span></div></div>
 <div class="actions"><button class="btn" id="yoru-reset-diagnosis">Usar meu relato</button><button class="btn primary" id="yoru-analyze">Analisar e sugerir</button></div><div class="yoru-result" id="yoru-result"><strong>ANÁLISE INICIAL</strong><p>Com mira pesada + overshoot alto, altere uma variável por vez. Toque em Analisar para gerar um ajuste pequeno.</p></div><button class="btn cyan full" id="yoru-apply" disabled>Aplicar sugestão ao perfil local</button><p class="muted" style="margin-top:9px">Não filtra o toque no jogo, não injeta código e não automatiza movimentos. Depois de copiar os valores, aplique-os manualmente no Free Fire e teste de novo.</p></div>
-<div class="card"><h3>Rodada controlada</h3><p class="muted">Faça 10 arrastos; altere Geral ou Ponto vermelho em 2–3 pontos por vez. Se continua pesada e passa do alvo, confira também posição/tamanho do botão de tiro e consistência do dedo/película.</p><div class="statgrid"><div class="stat"><small>Rodadas registadas</small><b id="yoru-rounds">0</b></div><div class="stat"><small>Último ajuste</small><b id="yoru-last">Nenhum</b></div></div><button class="btn full" id="yoru-round">Registrar rodada de 10 testes</button></div></section>
+<div class="card"><h3>Rodada controlada</h3><p class="muted">Faça 10 arrastos; altere Geral ou Ponto vermelho em 2–3 pontos por vez. Se continua pesada e passa do alvo, confira também posição/tamanho do botão de tiro e consistência do dedo/película.</p><div class="statgrid"><div class="stat"><small>Rodadas registadas</small><b id="yoru-rounds">0</b></div><div class="stat"><small>Último ajuste</small><b id="yoru-last">Nenhum</b></div></div><button class="btn full" id="yoru-round">Registrar rodada de 10 testes</button></div>
+<div class="card"><div class="section-head"><div><h3>Suavizador de trajetória</h3><div class="muted">Compare o toque original com a média móvel em X e Y.</div></div><span class="pill">FILTRO VISUAL</span></div>
+<p class="muted">Desenhe no quadro para ver a diferença entre o caminho bruto e o caminho suavizado. Ajuste a janela para comparar o resultado.</p>
+<div class="slider"><div class="slider-head"><label for="filter-window">Janela de suavização</label><output class="value" id="filter-window-value">5 pontos</output></div><input type="range" id="filter-window" min="1" max="9" step="2" value="5" aria-describedby="filter-note"></div>
+<div class="yoru-legend"><span class="raw">Traço original</span><span class="smooth">Traço suavizado</span></div>
+<canvas id="touch-canvas" width="320" height="180" aria-label="Área de teste de trajetória: desenhe com o dedo para comparar o traço original e o suavizado." role="img"></canvas>
+<div class="statgrid"><div class="stat"><small>Comprimento original</small><b id="gesture-length">0 px</b></div><div class="stat"><small>Comprimento suavizado</small><b id="filtered-length">0 px</b></div><div class="stat"><small>Amostras recebidas</small><b id="gesture-samples">0</b></div><div class="stat"><small>Filtro</small><b id="gesture-stability">Aguardando gesto</b></div></div>
+<div class="actions"><button class="btn" id="clear-trace" type="button">Limpar traço</button><button class="btn primary" id="reset-filter" type="button">Filtro padrão</button></div>
+<p class="trace-help" id="filter-note">Prévia local: a suavização afeta somente o desenho neste painel. Ela não altera eventos de toque do Android nem a mira dentro do Free Fire.</p></div></section>
 <section class="page" id="system"><div class="card"><div class="section-head"><div><h3>Preparação para jogar</h3><div class="muted">Checklist reversível e sem limpeza agressiva.</div></div><span class="status warn" id="checkcount">0/5</span></div><label class="check"><input type="checkbox" class="checkitem">Fechar manualmente apps pesados que não vou usar.</label><label class="check"><input type="checkbox" class="checkitem">Ativar Não Perturbe para evitar interrupções.</label><label class="check"><input type="checkbox" class="checkitem">Usar gráficos compatíveis com estabilidade do FPS.</label><label class="check"><input type="checkbox" class="checkitem">Evitar jogar enquanto o aparelho estiver muito quente.</label><label class="check"><input type="checkbox" class="checkitem">Testar a conexão antes de iniciar uma partida.</label><button class="btn full" id="clearchecks">Limpar checklist</button></div><div class="card"><h3>Otimização responsável</h3><p class="muted">O painel não promete aumentar FPS por mágica. No A06, priorize estabilidade, temperatura e espaço livre. Evite encerrar serviços do sistema, usar limpadores de RAM ou manter processos de otimização agressivos em segundo plano.</p></div><div class="card"><div class="section-head"><div><h3>Diagnóstico do A06</h3><div class="muted">Telemetria disponível no APK Android.</div></div><button class="btn" id="yoru-refresh-system">↻ Atualizar</button></div><div class="statgrid"><div class="stat"><small>RAM disponível</small><b id="yoru-ram-free">—</b></div><div class="stat"><small>RAM usada (estimada)</small><b id="yoru-ram-used">—</b></div><div class="stat"><small>Bateria</small><b id="yoru-battery">—</b></div><div class="stat"><small>Estado térmico</small><b id="yoru-thermal">—</b></div><div class="stat"><small>Armazenamento livre</small><b id="yoru-storage">—</b></div><div class="stat"><small>Pressão de memória</small><b id="yoru-memory-state">—</b></div></div><div class="notice cyan">Se o A06 estiver quente ou sob pressão de memória, priorize gráficos mais leves e feche manualmente apps que você abriu. Nenhum painel pode garantir aumento artificial de FPS.</div></div>
 <div class="card"><h3>Atalhos seguros do Android</h3><div class="yoru-grid">
 <div class="yoru-opt"><strong>🔋 Bateria</strong><p>Confira economia de energia e restrições ativas.</p><button class="btn" data-yoru-setting="battery">Abrir ajustes</button></div>
@@ -102,13 +110,107 @@ if(shake>=6){next.x2=Math.max(0,next.x2-2);next.x4=Math.max(0,next.x4-2);changes
 window.yoruLastSuggestion={values:next,changes,title,desc};$('yoru-result').innerHTML='<strong>'+title+'</strong><p>'+desc+'</p><p style="color:#81e6ff;margin-top:7px">Sugestão: '+changes.join(' · ')+'.</p>';$('yoru-apply').disabled=false};
 $('yoru-apply').onclick=()=>{const s=window.yoruLastSuggestion;if(!s)return;Object.entries(s.values).forEach(([k,val])=>{const el=$('s-'+k);if(el){el.value=val;el.dispatchEvent(new Event('input',{bubbles:true}))}});$('yoru-last').textContent=s.changes.join(', ');$('yoru-result').innerHTML='<strong>APLICADO AO PERFIL LOCAL</strong><p>Valores atualizados neste painel. Copie-os e aplique manualmente no jogo; faça uma nova rodada antes de mudar outra variável.</p>';$('yoru-apply').disabled=true};
 $('yoru-round').onclick=()=>{rounds++;$('yoru-rounds').textContent=rounds;try{localStorage.setItem('yoruRounds',String(rounds))}catch(e){}$('yoru-round').textContent='Rodada registada ✓';setTimeout(()=>$('yoru-round').textContent='Registrar rodada de 10 testes',900)};
-const c=$('touch-canvas');if(c){const ctx=c.getContext('2d');let pts=[],drawing=false,total=0;function draw(){ctx.clearRect(0,0,c.width,c.height);ctx.strokeStyle='#a68cff';ctx.lineWidth=4;ctx.lineCap='round';ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();ctx.fillStyle='#ff4f91';pts.filter((p,i)=>i%10===0).forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);ctx.fill()})}c.addEventListener('pointerdown',e=>{drawing=true;pts=[];total=0;const r=c.getBoundingClientRect();pts.push({x:(e.clientX-r.left)*c.width/r.width,y:(e.clientY-r.top)*c.height/r.height});c.setPointerCapture(e.pointerId);draw()});c.addEventListener('pointermove',e=>{if(!drawing)return;const r=c.getBoundingClientRect(),p={x:(e.clientX-r.left)*c.width/r.width,y:(e.clientY-r.top)*c.height/r.height},last=pts[pts.length-1];total+=Math.hypot(p.x-last.x,p.y-last.y);pts.push(p);draw();$('gesture-length').textContent=Math.round(total)+' px';if(pts.length>3){const direct=Math.hypot(p.x-pts[0].x,p.y-pts[0].y),ratio=direct/Math.max(1,total);$('gesture-stability').textContent=ratio>.9?'Traço reto':ratio>.65?'Curvas leves':'Muitas curvas'}});const end=()=>drawing=false;c.addEventListener('pointerup',end);c.addEventListener('pointercancel',end);$('clear-trace').onclick=()=>{pts=[];total=0;draw();$('gesture-length').textContent='0 px';$('gesture-stability').textContent='—'};draw()}
+const c=$('touch-canvas');
+if(c){
+const ctx=c.getContext('2d');
+const windowInput=$('filter-window'),windowValue=$('filter-window-value');
+const rawLengthOutput=$('gesture-length'),filteredLengthOutput=$('filtered-length');
+const samplesOutput=$('gesture-samples'),stateOutput=$('gesture-stability'),noteOutput=$('filter-note');
+let pts=[],drawing=false,pointerId=null,total=0,sampleCount=0,canvasWidth=0,canvasHeight=0;
+const maxPoints=1200;
+const getWindowSize=()=>Math.max(1,Math.min(9,Number(windowInput.value)||1));
+function stabilizeAim(points,windowSize){
+if(windowSize<=1||points.length<3)return points.map(p=>({x:p.x,y:p.y}));
+const half=Math.floor(windowSize/2);
+return points.map((point,index)=>{
+if(index===0||index===points.length-1)return {x:point.x,y:point.y};
+const start=Math.max(0,index-half),end=Math.min(points.length-1,index+half);
+let sumX=0,sumY=0,count=0;
+for(let i=start;i<=end;i++){sumX+=points[i].x;sumY+=points[i].y;count++}
+return {x:sumX/count,y:sumY/count};
+});
+}
+function pathLength(points){
+let length=0;
+for(let i=1;i<points.length;i++)length+=Math.hypot(points[i].x-points[i-1].x,points[i].y-points[i-1].y);
+return length;
+}
+function drawPath(points,color,lineWidth,dashed){
+if(points.length<2)return;
+ctx.save();ctx.strokeStyle=color;ctx.lineWidth=lineWidth;ctx.lineCap='round';ctx.lineJoin='round';ctx.setLineDash(dashed?[5,5]:[]);
+ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();ctx.restore();
+}
+function draw(){
+if(canvasWidth<=0||canvasHeight<=0)return;
+ctx.clearRect(0,0,canvasWidth,canvasHeight);
+ctx.save();ctx.strokeStyle='rgba(166,140,255,.12)';ctx.lineWidth=1;ctx.setLineDash([3,6]);ctx.beginPath();ctx.moveTo(0,canvasHeight/2);ctx.lineTo(canvasWidth,canvasHeight/2);ctx.moveTo(canvasWidth/2,0);ctx.lineTo(canvasWidth/2,canvasHeight);ctx.stroke();ctx.restore();
+if(!pts.length)return;
+const filtered=stabilizeAim(pts,getWindowSize());
+drawPath(pts,'rgba(166,140,255,.62)',2,true);
+drawPath(filtered,'#81e6ff',3,false);
+ctx.fillStyle='#ff4f91';ctx.beginPath();ctx.arc(pts[0].x,pts[0].y,4,0,Math.PI*2);ctx.fill();
+const last=pts[pts.length-1];ctx.fillStyle='#81e6ff';ctx.beginPath();ctx.arc(last.x,last.y,4,0,Math.PI*2);ctx.fill();
+}
+function updateMetrics(){
+const size=getWindowSize(),filtered=stabilizeAim(pts,size);
+rawLengthOutput.textContent=Math.round(total)+' px';
+filteredLengthOutput.textContent=Math.round(pathLength(filtered))+' px';
+samplesOutput.textContent=String(sampleCount);
+stateOutput.textContent=!pts.length?'Aguardando gesto':size===1?'Desativado':size+' amostras';
+windowValue.textContent=size+' '+(size===1?'ponto':'pontos');
+noteOutput.textContent=size===1?'Janela 1: filtro desligado; os dois caminhos devem coincidir. A prévia não afeta o jogo.':'Janela '+size+': média móvel aplicada ao desenho nos eixos X e Y. Efeito apenas visual dentro do painel; não altera o toque no Free Fire.';
+}
+function resizeCanvas(){
+const rect=c.getBoundingClientRect();
+if(rect.width<=0||rect.height<=0)return;
+const oldWidth=canvasWidth,oldHeight=canvasHeight;
+if(oldWidth>0&&oldHeight>0&&pts.length){
+const scaleX=rect.width/oldWidth,scaleY=rect.height/oldHeight;
+pts=pts.map(p=>({x:p.x*scaleX,y:p.y*scaleY}));
+total*=((Math.abs(scaleX)+Math.abs(scaleY))/2);
+}
+canvasWidth=rect.width;canvasHeight=rect.height;
+const dpr=Math.min(2,window.devicePixelRatio||1);
+const backingWidth=Math.max(1,Math.round(canvasWidth*dpr)),backingHeight=Math.max(1,Math.round(canvasHeight*dpr));
+if(c.width!==backingWidth)c.width=backingWidth;
+if(c.height!==backingHeight)c.height=backingHeight;
+ctx.setTransform(dpr,0,0,dpr,0,0);
+draw();updateMetrics();
+}
+function getPoint(e){
+const rect=c.getBoundingClientRect();
+return {x:Math.max(0,Math.min(canvasWidth,e.clientX-rect.left)),y:Math.max(0,Math.min(canvasHeight,e.clientY-rect.top))};
+}
+c.addEventListener('pointerdown',e=>{
+e.preventDefault();if(canvasWidth<=0||canvasHeight<=0)resizeCanvas();
+if(canvasWidth<=0||canvasHeight<=0)return;
+drawing=true;pointerId=e.pointerId;pts=[];total=0;sampleCount=1;pts.push(getPoint(e));
+try{c.setPointerCapture(e.pointerId)}catch(_){}
+draw();updateMetrics();
+});
+c.addEventListener('pointermove',e=>{
+if(!drawing||e.pointerId!==pointerId)return;
+const point=getPoint(e),last=pts[pts.length-1];
+total+=Math.hypot(point.x-last.x,point.y-last.y);sampleCount++;
+pts.push(point);
+if(pts.length>maxPoints){const latest=pts[pts.length-1];pts=pts.filter((_,i)=>i%2===0);if(pts[pts.length-1]!==latest)pts.push(latest)}
+draw();updateMetrics();
+});
+function endDrawing(e){if(!drawing)return;if(e&&e.pointerId!=null&&pointerId!==e.pointerId)return;drawing=false;pointerId=null;draw();updateMetrics()}
+c.addEventListener('pointerup',endDrawing);c.addEventListener('pointercancel',endDrawing);c.addEventListener('lostpointercapture',endDrawing);
+windowInput.addEventListener('input',()=>{updateMetrics();draw()});
+$('clear-trace').onclick=()=>{pts=[];drawing=false;pointerId=null;total=0;sampleCount=0;draw();updateMetrics()};
+$('reset-filter').onclick=()=>{windowInput.value='5';updateMetrics();draw()};
+window.resizeAimCanvas=resizeCanvas;
+window.addEventListener('resize',resizeCanvas);
+resizeCanvas();updateMetrics();
+}
 function systemInfo(){const raw=bridge('getSystemStatus');if(!raw){['yoru-ram-free','yoru-ram-used','yoru-battery','yoru-thermal','yoru-storage','yoru-memory-state'].forEach(id=>$(id).textContent='Disponível no APK');return}try{const d=JSON.parse(raw);$('yoru-ram-free').textContent=fmtBytes(d.availableRam);$('yoru-ram-used').textContent=fmtBytes(Math.max(0,(d.totalRamBytes||0)-(d.availableRam||0)));$('yoru-battery').textContent=d.batteryLevel>=0?d.batteryLevel+'%':'—';$('yoru-thermal').textContent=d.thermalLabel||'—';$('yoru-storage').textContent=fmtBytes(d.storageFreeBytes);$('yoru-memory-state').textContent=d.lowMemory?'Pressão de memória':'Normal'}catch(e){}}
 $('yoru-refresh-system').onclick=systemInfo;document.querySelectorAll('[data-yoru-setting]').forEach(b=>b.onclick=()=>{const result=bridge('openSystemSetting',b.dataset.yoruSetting);if(!result)alert('Atalho disponível na versão APK Android.')});
 function overlayStatus(){const raw=bridge('getOverlayStatus');if(!raw){$('yoru-overlay-status').textContent='Disponível na versão APK Android';return}try{const d=JSON.parse(raw);$('yoru-overlay-status').textContent=d.permission?(d.running?'Painel flutuante ativo':'Permissão concedida; pronto para iniciar'):'Permissão não concedida';$('yoru-overlay-help').textContent=d.permission?'A permissão está ativa. Toque em Ativar para mostrar ou atualizar a bolha flutuante.':'Toque em Ativar, conceda “Exibir sobre outros apps” e volte ao Yoru Aim Lab; depois toque em Ativar de novo.'}catch(e){}}
 $('yoru-enable-overlay').onclick=()=>{const raw=bridge('startFloatingPanel',currentProfileJson());if(!raw){$('yoru-overlay-status').textContent='Instale o APK Android para ativar a sobreposição';return}try{$('yoru-overlay-status').textContent=JSON.parse(raw).message||'Solicitação enviada';setTimeout(overlayStatus,600)}catch(e){overlayStatus()}};
 $('yoru-stop-overlay').onclick=()=>{const res=bridge('stopFloatingPanel');$('yoru-overlay-status').textContent=res?'Solicitação para parar enviada':'Disponível na versão APK Android';setTimeout(overlayStatus,500)};$('yoru-refresh-overlay').onclick=overlayStatus;window.refreshOverlayStatus=overlayStatus;
-document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{if(btn.dataset.page==='system')systemInfo();if(btn.dataset.page==='floating')overlayStatus()}));
+document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{if(btn.dataset.page==='system')systemInfo();if(btn.dataset.page==='floating')overlayStatus();if(btn.dataset.page==='stabilizer'&&window.resizeAimCanvas)requestAnimationFrame(window.resizeAimCanvas)}));
 systemInfo();overlayStatus();
 })();
 </script></body></html>
